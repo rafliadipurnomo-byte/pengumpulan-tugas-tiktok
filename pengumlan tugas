@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Pengumpulan Tugas TikTok — UNIMUS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Tone.js untuk Suara Lonceng Notifikasi Chrome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        unimus: {
+                            navy: '#0B2447',
+                            blue: '#19376D',
+                            accent: '#2563EB',
+                            gold: '#D97706',
+                        },
+                        tiktok: {
+                            pink: '#FE2C55',
+                            cyan: '#25F4EE',
+                            dark: '#0F172A'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(11, 36, 71, 0.08)',
+                        'card': '0 4px 24px -2px rgba(15, 23, 42, 0.06)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #EEF4FF 0%, #F8FAFC 45%, #F1F5F9 100%);
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #0B2447 0%, #19376D 55%, #1E40AF 100%);
+        }
+        /* Scrollbar halus */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col antialiased selection:bg-unimus-blue selection:text-white">
+
+    <!-- =====================================================================
+         1. TOP BAR RESMI UNIMUS (Terlihat oleh Mahasiswa, Terkunci untuk Admin)
+         ===================================================================== -->
+    <div id="unimus-official-topbar" class="w-full bg-white border-b border-slate-200/80 shadow-xs relative z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
+            <!-- Sisi Kiri: Logo UNIMUS & Banner Pemeringkatan -->
+            <div class="flex items-center gap-3 sm:gap-5 overflow-x-auto no-scrollbar py-0.5 flex-1">
+                <!-- Logo UNIMUS 2026 -->
+                <div class="flex items-center shrink-0">
+                    <img id="img-unimus-logo" src="LOgo Unimus baru 2026.png" alt="Logo UNIMUS"
+                        class="h-10 sm:h-12 w-auto object-contain select-none transition-transform duration-200 hover:scale-105">
+                    <button type="button" id="btn-quick-upload-logo"
+                        class="admin-only hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-unimus-navy border border-blue-200 text-xs font-semibold transition-all">
+                        <i data-lucide="image-plus" class="w-3.5 h-3.5 text-unimus-accent"></i>
+                        <span>Pasang Logo UNIMUS</span>
+                    </button>
+                </div>
+
+                <div class="h-8 w-px bg-slate-200 shrink-0 hidden sm:block"></div>
+
+                <!-- Banner Pemeringkatan Resmi UNIMUS -->
+                <div class="flex items-center shrink-0">
+                    <img id="img-unimus-banner" src="Logo Sosmed baru banget (2)_2.jpg" alt="Banner Resmi UNIMUS"
+                        class="h-9 sm:h-12 w-auto max-w-none object-contain select-none">
+                    <button type="button" id="btn-quick-upload-banner"
+                        class="admin-only hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold transition-all">
+                        <i data-lucide="upload-cloud" class="w-3.5 h-3.5 text-amber-600"></i>
+                        <span>Pasang Banner Pemeringkatan</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sisi Kanan: Kontrol Admin (Hanya Muncul Saat Mode Admin Aktif) -->
+            <div class="admin-only hidden items-center gap-2 shrink-0">
+                <button type="button" id="btn-open-branding-modal"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
+                    <i data-lucide="palette" class="w-3.5 h-3.5 text-unimus-blue"></i>
+                    <span class="hidden md:inline">Ubah Logo/Banner</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         2. NAVBAR PORTAL UTAMA
+         ===================================================================== -->
+    <header class="glass-header border-b border-slate-200/70 sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+            <!-- Identitas Portal -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl hero-gradient flex items-center justify-center shadow-md shadow-blue-950/15 shrink-0 relative">
+                    <i data-lucide="clapperboard" class="w-5 h-5 text-white"></i>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-tiktok-pink border-2 border-white"></span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-display font-bold text-base sm:text-lg text-unimus-navy tracking-tight">
+                            Portal Tugas TikTok
+                        </h1>
+                        <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-unimus-blue border border-blue-200/80">
+                            UNIMUS
+                        </span>
+                    </div>
+                    <p class="text-[11px] sm:text-xs text-slate-500">Universitas Muhammadiyah Semarang</p>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi Kanan -->
+            <div class="flex items-center gap-2 sm:gap-2.5">
+                <!-- Kontrol Khusus Admin/Dosen -->
+                <div class="admin-only hidden items-center gap-2">
+                    <button type="button" id="btn-notif-status"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 text-xs font-semibold transition-all">
+                        <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-amber-600"></i>
+                        <span id="notif-status-label" class="hidden md:inline">Notifikasi Chrome</span>
+                    </button>
+
+                    <button type="button" id="btn-open-sheets-modal"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 text-xs font-semibold transition-all">
+                        <i data-lucide="sheet" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span id="sheets-status-label" class="hidden md:inline">Google Sheets</span>
+                    </button>
+
+                    <button type="button" id="btn-lock-admin"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all"
+                        title="Kunci Kembali ke Tampilan Mahasiswa">
+                        <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                        <span class="hidden sm:inline">Kunci</span>
+                    </button>
+                </div>
+
+                <!-- Tombol Masuk Mode Admin (Untuk Dosen) -->
+                <button type="button" id="btn-unlock-admin"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-semibold transition-all">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-unimus-blue"></i>
+                    <span>Dasbor Dosen</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         3. TOAST NOTIFIKASI HALUS
+         ===================================================================== -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- =====================================================================
+         4. KONTEN UTAMA
+         ===================================================================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-10">
+        <div id="main-layout-grid" class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+
+            <!-- KOLOM KIRI / TENGAH: FORMULIR PENGUMPULAN TUGAS MAHASISWA -->
+            <section id="student-form-column" class="lg:col-span-6 lg:col-start-4 transition-all duration-300">
+                <div class="bg-white rounded-3xl shadow-soft border border-slate-200/80 overflow-hidden">
+                    <!-- Header Kartu Hero UNIMUS -->
+                    <div class="hero-gradient px-6 sm:px-8 py-7 text-white relative overflow-hidden">
+                        <div class="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-white/5 blur-xl"></div>
+                        <div class="absolute right-6 bottom-0 w-24 h-24 rounded-full bg-tiktok-cyan/10 blur-lg"></div>
+
+                        <div class="relative z-10">
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs text-[11px] font-semibold text-blue-100 mb-3">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                Formulir Pengumpulan Online
+                            </div>
+                            <h2 class="font-display text-xl sm:text-2xl font-extrabold tracking-tight">
+                                Kumpulkan Tugas Video TikTok
+                            </h2>
+                            <p class="text-xs sm:text-sm text-blue-100/90 mt-1.5 leading-relaxed">
+                                Lengkapi identitas mahasiswa dan tempelkan tautan video TikTok Anda. Data otomatis tersimpan ke rekap dosen & Google Sheets.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Form Input -->
+                    <form id="submission-form" class="p-6 sm:p-8 space-y-5" novalidate>
+                        <!-- Nama Lengkap -->
+                        <div class="space-y-1.5">
+                            <label for="input-nama" class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                                Nama Lengkap Mahasiswa <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative group">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 group-focus-within:text-unimus-blue transition-colors">
+                                    <i data-lucide="user" class="w-4 h-4"></i>
+                                </span>
+                                <input type="text" id="input-nama" required placeholder="Contoh: Aisyah Putri Maharani"
+                                    class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50/70 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-unimus-blue/25 focus:border-unimus-blue transition-all">
+                            </div>
+                            <p id="err-nama" class="hidden text-xs text-rose-600 font-medium flex items-center gap-1">
+                                <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Nama lengkap wajib diisi.
+                            </p>
+                        </div>
+
+                        <!-- Baris NIM & Kelas -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label for="input-nim" class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                                    NIM <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative group">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 group-focus-within:text-unimus-blue transition-colors">
+                                        <i data-lucide="id-card" class="w-4 h-4"></i>
+                                    </span>
+                                    <input type="text" id="input-nim" required placeholder="Contoh: C2C024001"
+                                        class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50/70 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-unimus-blue/25 focus:border-unimus-blue transition-all uppercase">
+                                </div>
+                                <p id="err-nim" class="hidden text-xs text-rose-600 font-medium flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> NIM wajib diisi.
+                                </p>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label for="input-kelas" class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                                    Kelas / Program Studi
+                                </label>
+                                <div class="relative group">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 group-focus-within:text-unimus-blue transition-colors">
+                                        <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                                    </span>
+                                    <input type="text" id="input-kelas" placeholder="Contoh: Informatika A"
+                                        class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50/70 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-unimus-blue/25 focus:border-unimus-blue transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Link Video TikTok -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <label for="input-link" class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                                    Tautan Video TikTok <span class="text-rose-500">*</span>
+                                </label>
+                                <button type="button" id="btn-paste-link"
+                                    class="text-[11px] font-semibold text-unimus-blue hover:text-unimus-navy inline-flex items-center gap-1 transition-colors">
+                                    <i data-lucide="clipboard-paste" class="w-3 h-3"></i>
+                                    Tempel Link
+                                </button>
+                            </div>
+                            <div class="relative group">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 group-focus-within:text-tiktok-pink transition-colors">
+                                    <i data-lucide="link-2" class="w-4 h-4"></i>
+                                </span>
+                                <input type="url" id="input-link" required placeholder="https://www.tiktok.com/@username/video/..."
+                                    class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50/70 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-tiktok-pink/25 focus:border-tiktok-pink transition-all">
+                            </div>
+                            <p id="err-link" class="hidden text-xs text-rose-600 font-medium flex items-center gap-1">
+                                <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Masukkan tautan video TikTok yang valid.
+                            </p>
+                        </div>
+
+                        <!-- Kartu Mini Pratinjau Otomatis Saat Mahasiswa Menempel Link -->
+                        <div id="live-link-check-card" class="hidden rounded-2xl bg-slate-50 border border-slate-200/90 p-3.5 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-tiktok-dark text-white flex items-center justify-center shrink-0">
+                                    <i data-lucide="video" class="w-5 h-5 text-tiktok-cyan"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p id="live-link-title" class="text-xs font-bold text-slate-800 truncate">Tautan TikTok Terdeteksi</p>
+                                    <p id="live-link-author" class="text-[11px] text-slate-500 truncate">Siap untuk dikirimkan</p>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold shrink-0">
+                                Valid
+                            </span>
+                        </div>
+
+                        <!-- Catatan Opsional -->
+                        <div class="space-y-1.5">
+                            <label for="input-catatan" class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                                Judul Konten / Keterangan <span class="text-slate-400 font-normal normal-case">(Opsional)</span>
+                            </label>
+                            <input type="text" id="input-catatan" placeholder="Contoh: Tugas Kampanye Digital Minggu ke-4"
+                                class="w-full px-4 py-3 rounded-2xl bg-slate-50/70 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-unimus-blue/25 focus:border-unimus-blue transition-all">
+                        </div>
+
+                        <!-- Tombol Submit Utama -->
+                        <div class="pt-2">
+                            <button type="submit" id="btn-submit-tugas"
+                                class="w-full py-3.5 px-6 rounded-2xl hero-gradient hover:opacity-95 active:scale-[0.99] text-white font-display font-bold text-sm shadow-lg shadow-blue-950/20 flex items-center justify-center gap-2.5 transition-all">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                                <span>Kirim Tugas Sekarang</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Konfirmasi Sukses Setelah Mahasiswa Mengirim -->
+                    <div id="student-success-banner" class="hidden mx-6 sm:mx-8 mb-8 p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <h3 class="font-display font-bold text-sm text-emerald-900">Tugas Berhasil Dikirim!</h3>
+                                <p id="success-detail-text" class="text-xs text-emerald-800 leading-relaxed">
+                                    Data pengumpulan Anda telah tercatat di sistem dan diteruskan ke dosen pengampu.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="button" id="btn-submit-another"
+                                class="px-3.5 py-1.5 rounded-xl bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-semibold transition-colors">
+                                Kirim Tugas Lainnya
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- KOLOM KANAN: DASBOR PEMANTAU DOSEN / ADMIN (Terkunci untuk Mahasiswa) -->
+            <section id="admin-dashboard-column" class="admin-only hidden lg:col-span-7 space-y-5">
+                <!-- Kartu Statistik Ringkas -->
+                <div class="grid grid-cols-3 gap-3 sm:gap-4">
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Masuk</span>
+                            <div class="w-7 h-7 rounded-lg bg-blue-50 text-unimus-blue flex items-center justify-center">
+                                <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                            </div>
+                        </div>
+                        <p id="stat-total" class="font-display text-2xl font-extrabold text-unimus-navy mt-1">0</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Google Sheets</span>
+                            <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+                            </div>
+                        </div>
+                        <p id="stat-synced" class="font-display text-2xl font-extrabold text-emerald-600 mt-1">0</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Hari Ini</span>
+                            <div class="w-7 h-7 rounded-lg bg-rose-50 text-tiktok-pink flex items-center justify-center">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            </div>
+                        </div>
+                        <p id="stat-today" class="font-display text-2xl font-extrabold text-slate-800 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- Panel Daftar Pengumpulan & Pratinjau Video -->
+                <div class="bg-white rounded-3xl shadow-soft border border-slate-200/80 overflow-hidden">
+                    <div class="px-6 py-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <h2 class="font-display font-bold text-base sm:text-lg text-unimus-navy flex items-center gap-2">
+                                <span>Daftar Pengumpulan Mahasiswa</span>
+                                <span id="badge-live-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-unimus-blue">0</span>
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Klik <strong>Tonton Video</strong> untuk memutar video TikTok langsung di layar ini.</p>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="btn-export-csv"
+                                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                <span>Unduh Excel (CSV)</span>
+                            </button>
+                            <button type="button" id="btn-clear-all"
+                                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold transition-colors"
+                                title="Bersihkan Semua Data Lokal">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bilah Pencarian & Filter Kelas -->
+                    <div class="px-6 py-3.5 bg-slate-50/70 border-b border-slate-100 flex flex-col sm:flex-row gap-2.5">
+                        <div class="relative flex-1">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                <i data-lucide="search" class="w-4 h-4"></i>
+                            </span>
+                            <input type="text" id="input-search" placeholder="Cari nama mahasiswa atau NIM..."
+                                class="w-full pl-9 pr-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-unimus-blue">
+                        </div>
+                        <select id="filter-kelas"
+                            class="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 font-medium focus:outline-none focus:border-unimus-blue">
+                            <option value="">Semua Kelas</option>
+                        </select>
+                    </div>
+
+                    <!-- List Kiriman Mahasiswa -->
+                    <div id="submissions-list" class="divide-y divide-slate-100 max-h-[640px] overflow-y-auto">
+                        <!-- Diisi secara dinamis -->
+                    </div>
+
+                    <!-- State Kosong -->
+                    <div id="empty-state" class="py-14 px-6 text-center space-y-3">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                            <i data-lucide="inbox" class="w-7 h-7"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <h3 class="font-display font-bold text-sm text-slate-700">Belum Ada Tugas Masuk</h3>
+                            <p class="text-xs text-slate-500 max-w-xs mx-auto">
+                                Pengumpulan tugas dari mahasiswa akan langsung muncul di sini disertai notifikasi Chrome.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- =====================================================================
+         5. FOOTER RESMI
+         ===================================================================== -->
+    <footer class="border-t border-slate-200/80 bg-white/70 py-5 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+            <p class="font-medium text-slate-600">Universitas Muhammadiyah Semarang (UNIMUS) — A University for the Excellence</p>
+            <p>Sistem Pengumpulan Tugas Digital & Terintegrasi Google Sheets</p>
+        </div>
+    </footer>
+
+    <!-- =====================================================================
+         MODAL A: MASUK MODE ADMIN / DOSEN
+         ===================================================================== -->
+    <div id="modal-admin-login" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="hero-gradient px-6 py-5 text-white flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-blue-200"></i>
+                    <h3 class="font-display font-bold text-base">Akses Dasbor Dosen</h3>
+                </div>
+                <button type="button" class="close-modal text-white/70 hover:text-white" data-target="modal-admin-login">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="form-admin-login" class="p-6 space-y-4">
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Masukkan PIN Admin untuk membuka dasbor pemantauan, menonton pratinjau video mahasiswa, serta mengatur Logo/Banner & Google Sheets.
+                </p>
+                <div class="space-y-1.5">
+                    <label for="input-admin-pin" class="block text-xs font-bold uppercase tracking-wider text-slate-600">PIN Admin</label>
+                    <input type="password" id="input-admin-pin" placeholder="Masukkan PIN..." required
+                        class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:outline-none focus:border-unimus-blue">
+                    <p class="text-[11px] text-slate-400">PIN Default: <strong class="text-slate-600">unimus2026</strong></p>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" class="close-modal px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold" data-target="modal-admin-login">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl hero-gradient text-white text-xs font-bold shadow-md">Masuk Dasbor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL B: PRATINJAU VIDEO TIKTOK (TONTON LANGSUNG DI WEB)
+         ===================================================================== -->
+    <div id="modal-video-preview" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto">
+            <!-- Header Modal Video -->
+            <div class="bg-tiktok-dark text-white px-5 py-4 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-tiktok-pink/20 border border-tiktok-pink/40 flex items-center justify-center shrink-0">
+                        <i data-lucide="play" class="w-4 h-4 text-tiktok-pink fill-tiktok-pink"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 id="preview-student-name" class="font-display font-bold text-sm truncate">Nama Mahasiswa</h3>
+                        <p id="preview-student-meta" class="text-[11px] text-slate-400 truncate">NIM • Kelas</p>
+                    </div>
+                </div>
+                <button type="button" id="btn-close-video-preview" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Area Pemutar Video -->
+            <div class="bg-slate-950 p-4 flex flex-col items-center justify-center min-h-[460px] relative">
+                <div id="video-loader" class="flex flex-col items-center justify-center text-center py-12 space-y-3">
+                    <div class="w-9 h-9 border-4 border-tiktok-cyan border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-xs text-slate-300 font-medium">Menyiapkan pemutar video TikTok...</p>
+                </div>
+
+                <div id="video-embed-box" class="w-full flex justify-center items-center"></div>
+
+                <div id="video-fallback-box" class="hidden text-center py-8 px-4 space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto">
+                        <i data-lucide="external-link" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-sm text-white font-semibold">Video Memerlukan Pembukaan Langsung</p>
+                    <p class="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
+                        Tautan pendek atau video dengan pengaturan privasi terbatas dapat langsung ditonton melalui tombol <strong>Buka di TikTok</strong> di bawah.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Footer Modal Video -->
+            <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3">
+                <p id="preview-student-note" class="text-xs text-slate-600 truncate">Tugas Video TikTok</p>
+                <a id="preview-external-link" href="#" target="_blank" rel="noopener noreferrer"
+                    class="px-4 py-2 rounded-xl bg-tiktok-dark hover:bg-slate-800 text-white text-xs font-bold inline-flex items-center gap-1.5 shrink-0 transition-colors">
+                    <i data-lucide="external-link" class="w-3.5 h-3.5 text-tiktok-cyan"></i>
+                    <span>Buka di TikTok</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL C: PENGATURAN LOGO & BANNER UNIMUS (KHUSUS ADMIN)
+         ===================================================================== -->
+    <div id="modal-branding" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="hero-gradient px-6 py-4 text-white flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="image" class="w-5 h-5 text-blue-200"></i>
+                    <h3 class="font-display font-bold text-base">Atur Logo & Banner UNIMUS</h3>
+                </div>
+                <button type="button" class="close-modal text-white/70 hover:text-white" data-target="modal-branding">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-5">
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Pilih file gambar dari perangkat Anda. Logo dan banner akan tersimpan otomatis dan hanya tampil utuh bagi mahasiswa tanpa bisa diubah.
+                </p>
+
+                <!-- Upload Logo UNIMUS -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">1. Logo UNIMUS (Kiri)</span>
+                        <label for="file-logo-input" class="cursor-pointer px-3 py-1.5 rounded-xl bg-unimus-blue hover:bg-unimus-navy text-white text-xs font-semibold transition-colors">
+                            Pilih File Logo
+                        </label>
+                        <input type="file" id="file-logo-input" accept="image/*" class="hidden">
+                    </div>
+                    <p class="text-[11px] text-slate-500">Gunakan file <code>LOgo Unimus baru 2026.png</code></p>
+                </div>
+
+                <!-- Upload Banner Pemeringkatan -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">2. Banner Pemeringkatan UNIMUS</span>
+                        <label for="file-banner-input" class="cursor-pointer px-3 py-1.5 rounded-xl bg-unimus-blue hover:bg-unimus-navy text-white text-xs font-semibold transition-colors">
+                            Pilih File Banner
+                        </label>
+                        <input type="file" id="file-banner-input" accept="image/*" class="hidden">
+                    </div>
+                    <p class="text-[11px] text-slate-500">Gunakan file <code>Logo Sosmed baru banget (2)_2.jpg</code></p>
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                    <button type="button" id="btn-reset-branding" class="text-xs font-semibold text-rose-600 hover:underline">
+                        Reset Bawaan
+                    </button>
+                    <button type="button" class="close-modal px-5 py-2.5 rounded-xl hero-gradient text-white text-xs font-bold" data-target="modal-branding">
+                        Selesai
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL D: INTEGRASI GOOGLE SHEETS (KHUSUS ADMIN)
+         ===================================================================== -->
+    <div id="modal-sheets" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto">
+            <div class="bg-emerald-700 px-6 py-4 text-white flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <i data-lucide="sheet" class="w-5 h-5 text-emerald-200"></i>
+                    <h3 class="font-display font-bold text-base">Koneksi Otomatis Google Sheets</h3>
+                </div>
+                <button type="button" class="close-modal text-white/80 hover:text-white" data-target="modal-sheets">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-xs text-emerald-950 space-y-2">
+                    <p class="font-bold">Cara Menghubungkan Spreadsheet Anda:</p>
+                    <ol class="list-decimal list-inside space-y-1 text-emerald-900">
+                        <li>Buka Google Spreadsheet Anda, lalu klik menu <strong>Ekstensi &rarr; Apps Script</strong>.</li>
+                        <li>Klik tombol <strong>Salin Script</strong> di bawah dan tempelkan ke editor Apps Script (mendukung simpan & muat ulang data otomatis).</li>
+                        <li>Klik <strong>Terapkan &rarr; Deployment Baru &rarr; Aplikasi Web</strong> (Akses: <em>Siapa saja</em>), lalu tempel URL-nya di bawah ini.</li>
+                    </ol>
+                    <button type="button" id="btn-copy-apps-script"
+                        class="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold transition-colors">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        <span>Salin Script Google Sheets</span>
+                    </button>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="input-sheets-url" class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                        URL Web App Google Apps Script
+                    </label>
+                    <input type="url" id="input-sheets-url" placeholder="https://script.google.com/macros/s/.../exec"
+                        class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-emerald-600">
+                </div>
+
+                <!-- Ekspor Kode Siap Tempel ke Google Sites -->
+                <div class="p-4 rounded-2xl bg-blue-50/80 border border-blue-200 text-xs text-unimus-navy space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="font-bold flex items-center gap-1.5">
+                            <i data-lucide="globe" class="w-4 h-4 text-unimus-blue"></i>
+                            <span>Khusus Pengguna Google Sites (Anti-Reset)</span>
+                        </p>
+                    </div>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">
+                        Karena Google Sites memblokir penyimpanan browser pengunjung, klik tombol di bawah untuk menyalin <strong>Kode HTML Final</strong> yang sudah tertanam URL Google Sheets, Logo, & Banner Anda secara permanen, lalu tempelkan ke <strong>Google Sites &rarr; Sisipkan &rarr; Sematkan Kode</strong>.
+                    </p>
+                    <button type="button" id="btn-copy-gsites-html"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-unimus-navy hover:bg-unimus-blue text-white text-xs font-bold transition-colors shadow-xs">
+                        <i data-lucide="code-2" class="w-3.5 h-3.5 text-blue-200"></i>
+                        <span>Salin Kode HTML Siap Tempel ke Google Sites</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" class="close-modal px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold" data-target="modal-sheets">Batal</button>
+                    <button type="button" id="btn-save-sheets-url" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-md">
+                        Simpan Koneksi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <textarea id="clipboard-helper" class="sr-only" aria-hidden="true"></textarea>
+
+    <!-- KONFIGURASI PATEN TERTANAM (UNTUK GOOGLE SITES) -->
+    <script id="embedded-portal-config" type="application/json">
+        {"sheetsWebhookUrl":"","logoData":"","bannerData":""}
+    </script>
+
+    <!-- =====================================================================
+         JAVASCRIPT APLIKASI (DENGAN PENYIMPANAN CLOUD & GOOGLE SHEETS DATABASE)
+         ===================================================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // =====================================================================
+        // PENYIMPANAN TAHAN REFRESH (INDEXEDDB + CLOUD FIRESTORE)
+        // =====================================================================
+        const STORAGE_SUBMISSIONS = 'unimus_tiktok_submissions_v1';
+        const STORAGE_SHEETS_URL  = 'unimus_tiktok_sheets_url_v1';
+        const STORAGE_LOGO_DATA   = 'unimus_tiktok_logo_v1';
+        const STORAGE_BANNER_DATA = 'unimus_tiktok_banner_v1';
+        const ADMIN_PIN_CODE      = 'unimus2026';
+
+        const IDB_NAME = 'UNIMUS_TikTok_Portal_DB';
+        const IDB_STORE = 'kv_store';
+
+        function openLocalVault() {
+            return new Promise((resolve) => {
+                try {
+                    const req = indexedDB.open(IDB_NAME, 1);
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(IDB_STORE)) {
+                            db.createObjectStore(IDB_STORE);
+                        }
+                    };
+                    req.onsuccess = (e) => resolve(e.target.result);
+                    req.onerror = () => resolve(null);
+                } catch (e) {
+                    resolve(null);
+                }
+            });
+        }
+
+        async function vaultGet(key) {
+            const idb = await openLocalVault();
+            if (!idb) return null;
+            return new Promise((resolve) => {
+                try {
+                    const tx = idb.transaction(IDB_STORE, 'readonly');
+                    const req = tx.objectStore(IDB_STORE).get(key);
+                    req.onsuccess = () => resolve(req.result ?? null);
+                    req.onerror = () => resolve(null);
+                } catch (e) {
+                    resolve(null);
+                }
+            });
+        }
+
+        async function vaultSet(key, value) {
+            const idb = await openLocalVault();
+            if (!idb) return;
+            return new Promise((resolve) => {
+                try {
+                    const tx = idb.transaction(IDB_STORE, 'readwrite');
+                    tx.objectStore(IDB_STORE).put(value, key);
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = () => resolve(false);
+                } catch (e) {
+                    resolve(false);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Muat terlebih dahulu dari Config Tertanam (Google Sites) & IndexedDB
+            let embeddedCfg = {};
+            try {
+                const cfgEl = document.getElementById('embedded-portal-config');
+                if (cfgEl && cfgEl.textContent) embeddedCfg = JSON.parse(cfgEl.textContent);
+            } catch (e) {}
+
+            const [savedSubs, savedSheetsUrl, savedLogo, savedBanner] = await Promise.all([
+                vaultGet(STORAGE_SUBMISSIONS),
+                vaultGet(STORAGE_SHEETS_URL),
+                vaultGet(STORAGE_LOGO_DATA),
+                vaultGet(STORAGE_BANNER_DATA)
+            ]);
+
+            // Inisialisasi Cloud Database (Firestore)
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'unimus-tiktok-portal';
+            let db = null;
+            let auth = null;
+            let currentUser = null;
+
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                }
+            } catch (e) {
+                console.warn('Mode Google Sheets / Lokal aktif:', e);
+            }
+
+            // State Aplikasi (Prioritaskan Config Tertanam Google Sites -> IndexedDB)
+            let submissionsList = Array.isArray(savedSubs) ? savedSubs : [];
+            let sheetsWebhookUrl = (typeof savedSheetsUrl === 'string' && savedSheetsUrl)
+                ? savedSheetsUrl
+                : (embeddedCfg.sheetsWebhookUrl || '');
+            let isAdminUnlocked = sessionStorage.getItem('unimus_admin_session') === 'true';
+            let isInitialSnapshotLoaded = false;
+
+            // Elemen Utama
+            const studentFormCol   = document.getElementById('student-form-column');
+            const adminDashCol     = document.getElementById('admin-dashboard-column');
+            const btnUnlockAdmin   = document.getElementById('btn-unlock-admin');
+            const btnLockAdmin     = document.getElementById('btn-lock-admin');
+            const submissionsEl    = document.getElementById('submissions-list');
+            const emptyStateEl     = document.getElementById('empty-state');
+
+            // -----------------------------------------------------------------
+            // 1. UTILITAS TOAST & CLIPBOARD
+            // -----------------------------------------------------------------
+            function showToast(title, message, type = 'info') {
+                const container = document.getElementById('toast-container');
+                const palette = {
+                    success: 'bg-emerald-900 text-white border-emerald-700',
+                    error:   'bg-rose-900 text-white border-rose-700',
+                    warning: 'bg-amber-900 text-white border-amber-700',
+                    info:    'bg-unimus-navy text-white border-blue-800'
+                };
+                const iconMap = {
+                    success: 'check-circle-2',
+                    error:   'alert-octagon',
+                    warning: 'bell-ring',
+                    info:    'info'
+                };
+
+                const toast = document.createElement('div');
+                toast.className = `pointer-events-auto rounded-2xl border p-4 shadow-xl flex items-start gap-3 transition-all duration-300 translate-y-2 opacity-0 ${palette[type] || palette.info}`;
+                toast.innerHTML = `
+                    <i data-lucide="${iconMap[type] || 'info'}" class="w-5 h-5 shrink-0 mt-0.5"></i>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-display font-bold text-xs">${title}</p>
+                        <p class="text-[11px] opacity-90 mt-0.5 leading-relaxed">${message}</p>
+                    </div>
+                `;
+                container.appendChild(toast);
+                lucide.createIcons();
+
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-y-2', 'opacity-0');
+                });
+
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-2');
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
+
+            function copyToClipboard(text, successMsg) {
+                const helper = document.getElementById('clipboard-helper');
+                helper.value = text;
+                helper.select();
+                document.execCommand('copy');
+                showToast('Tersalin', successMsg, 'success');
+            }
+
+            // -----------------------------------------------------------------
+            // 2. MANAJEMEN LOGO & BANNER UNIMUS (PATEN UNTUK SEMUA PENGUNJUNG)
+            // -----------------------------------------------------------------
+            const imgLogo   = document.getElementById('img-unimus-logo');
+            const imgBanner = document.getElementById('img-unimus-banner');
+            const btnQuickLogo   = document.getElementById('btn-quick-upload-logo');
+            const btnQuickBanner = document.getElementById('btn-quick-upload-banner');
+
+            let sharedLogoData   = (typeof savedLogo === 'string' && savedLogo) ? savedLogo : (embeddedCfg.logoData || '');
+            let sharedBannerData = (typeof savedBanner === 'string' && savedBanner) ? savedBanner : (embeddedCfg.bannerData || '');
+
+            function applyBrandingAssets() {
+                if (sharedLogoData) {
+                    imgLogo.src = sharedLogoData;
+                    imgLogo.classList.remove('hidden');
+                    btnQuickLogo.classList.add('hidden');
+                }
+                if (sharedBannerData) {
+                    imgBanner.src = sharedBannerData;
+                    imgBanner.classList.remove('hidden');
+                    btnQuickBanner.classList.add('hidden');
+                }
+            }
+
+            async function saveGlobalSettingsToCloud() {
+                await vaultSet(STORAGE_LOGO_DATA, sharedLogoData);
+                await vaultSet(STORAGE_BANNER_DATA, sharedBannerData);
+                await vaultSet(STORAGE_SHEETS_URL, sheetsWebhookUrl);
+
+                // Simpan juga Logo & Banner ke Google Sheets agar otomatis dimuat semua pengunjung Google Sites
+                if (sheetsWebhookUrl) {
+                    try {
+                        await fetch(sheetsWebhookUrl, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: 'save_branding',
+                                logoData: sharedLogoData,
+                                bannerData: sharedBannerData
+                            })
+                        });
+                    } catch (e) {}
+                }
+
+                if (!db || !currentUser) return;
+                try {
+                    const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'portal_settings', 'global_config');
+                    await setDoc(settingsRef, {
+                        logoData: sharedLogoData,
+                        bannerData: sharedBannerData,
+                        sheetsWebhookUrl: sheetsWebhookUrl,
+                        updatedAt: Date.now()
+                    }, { merge: true });
+                } catch (err) {
+                    console.warn('Gagal menyinkronkan pengaturan global:', err);
+                }
+            }
+
+            imgLogo.onerror = () => {
+                if (sharedLogoData) return;
+                imgLogo.classList.add('hidden');
+                if (isAdminUnlocked) {
+                    btnQuickLogo.classList.remove('hidden');
+                    btnQuickLogo.classList.add('inline-flex');
+                }
+            };
+
+            imgBanner.onerror = () => {
+                if (sharedBannerData) return;
+                imgBanner.classList.add('hidden');
+                if (isAdminUnlocked) {
+                    btnQuickBanner.classList.remove('hidden');
+                    btnQuickBanner.classList.add('inline-flex');
+                }
+            };
+
+            function compressAndStoreImage(file, maxWidth, quality, callback) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        const outputMime = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                        const compressedUrl = canvas.toDataURL(outputMime, quality);
+                        callback(compressedUrl);
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function handleImageUpload(fileInput, isLogo, targetImg, quickBtn, labelName) {
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const maxW = isLogo ? 360 : 1200;
+                    compressAndStoreImage(file, maxW, 0.88, async (dataUrl) => {
+                        try {
+                            if (isLogo) {
+                                sharedLogoData = dataUrl;
+                                await vaultSet(STORAGE_LOGO_DATA, dataUrl);
+                            } else {
+                                sharedBannerData = dataUrl;
+                                await vaultSet(STORAGE_BANNER_DATA, dataUrl);
+                            }
+                            targetImg.src = dataUrl;
+                            targetImg.classList.remove('hidden');
+                            quickBtn.classList.add('hidden');
+                            await saveGlobalSettingsToCloud();
+                            showToast('Paten Tersimpan', `${labelName} telah disimpan paten & tidak akan hilang saat refresh.`, 'success');
+                        } catch (err) {
+                            showToast('Gagal Menyimpan', 'Ukuran file gambar terlalu besar untuk disimpan.', 'error');
+                        }
+                    });
+                });
+            }
+
+            handleImageUpload(document.getElementById('file-logo-input'), true, imgLogo, btnQuickLogo, 'Logo UNIMUS');
+            handleImageUpload(document.getElementById('file-banner-input'), false, imgBanner, btnQuickBanner, 'Banner Pemeringkatan UNIMUS');
+
+            btnQuickLogo.addEventListener('click', () => document.getElementById('file-logo-input').click());
+            btnQuickBanner.addEventListener('click', () => document.getElementById('file-banner-input').click());
+
+            document.getElementById('btn-open-branding-modal').addEventListener('click', () => {
+                openModal('modal-branding');
+            });
+
+            document.getElementById('btn-reset-branding').addEventListener('click', async () => {
+                sharedLogoData = '';
+                sharedBannerData = '';
+                await vaultSet(STORAGE_LOGO_DATA, '');
+                await vaultSet(STORAGE_BANNER_DATA, '');
+                imgLogo.src = 'LOgo Unimus baru 2026.png';
+                imgBanner.src = 'Logo Sosmed baru banget (2)_2.jpg';
+                await saveGlobalSettingsToCloud();
+                showToast('Direset', 'Logo dan banner dikembalikan ke bawaan untuk semua pengunjung.', 'info');
+            });
+
+            applyBrandingAssets();
+
+            // -----------------------------------------------------------------
+            // 3. KONTROL HAK AKSES (MAHASISWA VS DOSEN/ADMIN)
+            // -----------------------------------------------------------------
+            function applyRoleView() {
+                const adminElements = document.querySelectorAll('.admin-only');
+                if (isAdminUnlocked) {
+                    adminElements.forEach(el => {
+                        el.classList.remove('hidden');
+                        if (el.tagName === 'DIV' && el.id !== 'admin-dashboard-column') {
+                            el.classList.add('flex');
+                        }
+                    });
+                    btnUnlockAdmin.classList.add('hidden');
+                    studentFormCol.classList.remove('lg:col-span-6', 'lg:col-start-4');
+                    studentFormCol.classList.add('lg:col-span-5');
+                    adminDashCol.classList.remove('hidden');
+                } else {
+                    adminElements.forEach(el => {
+                        el.classList.add('hidden');
+                        el.classList.remove('flex');
+                    });
+                    btnUnlockAdmin.classList.remove('hidden');
+                    studentFormCol.classList.remove('lg:col-span-5');
+                    studentFormCol.classList.add('lg:col-span-6', 'lg:col-start-4');
+                    adminDashCol.classList.add('hidden');
+                }
+                updateSheetsStatusBadge();
+                updateNotifStatusBadge();
+                renderDashboard();
+            }
+
+            btnUnlockAdmin.addEventListener('click', () => {
+                document.getElementById('input-admin-pin').value = '';
+                openModal('modal-admin-login');
+                setTimeout(() => document.getElementById('input-admin-pin').focus(), 100);
+            });
+
+            document.getElementById('form-admin-login').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const enteredPin = document.getElementById('input-admin-pin').value.trim();
+                if (enteredPin === ADMIN_PIN_CODE) {
+                    isAdminUnlocked = true;
+                    sessionStorage.setItem('unimus_admin_session', 'true');
+                    closeModal('modal-admin-login');
+                    applyRoleView();
+                    showToast('Dasbor Dosen Aktif', 'Anda sekarang dapat memantau tugas & menonton pratinjau video.', 'success');
+                } else {
+                    showToast('PIN Salah', 'Silakan masukkan PIN Admin yang benar.', 'error');
+                }
+            });
+
+            btnLockAdmin.addEventListener('click', () => {
+                isAdminUnlocked = false;
+                sessionStorage.removeItem('unimus_admin_session');
+                applyRoleView();
+                showToast('Tampilan Mahasiswa', 'Dasbor dosen dan pengaturan telah dikunci.', 'info');
+            });
+
+            // -----------------------------------------------------------------
+            // 4. NOTIFIKASI CHROME & SUARA LONCENG (TONE.JS)
+            // -----------------------------------------------------------------
+            function playBellChime() {
+                try {
+                    if (typeof Tone !== 'undefined') {
+                        Tone.start();
+                        const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                        synth.volume.value = -8;
+                        const now = Tone.now();
+                        synth.triggerAttackRelease('C6', '16n', now);
+                        synth.triggerAttackRelease('E6', '16n', now + 0.12);
+                        synth.triggerAttackRelease('G6', '8n', now + 0.24);
+                    }
+                } catch (e) {}
+            }
+
+            function updateNotifStatusBadge() {
+                const label = document.getElementById('notif-status-label');
+                if (!('Notification' in window)) {
+                    label.textContent = 'Notifikasi Tidak Didukung';
+                    return;
+                }
+                if (Notification.permission === 'granted') {
+                    label.textContent = 'Notifikasi Aktif';
+                } else {
+                    label.textContent = 'Aktifkan Notifikasi';
+                }
+            }
+
+            document.getElementById('btn-notif-status').addEventListener('click', async () => {
+                if (!('Notification' in window)) {
+                    showToast('Tidak Didukung', 'Browser Anda tidak mendukung notifikasi desktop.', 'warning');
+                    return;
+                }
+                if (Notification.permission === 'granted') {
+                    playBellChime();
+                    new Notification('Portal Tugas TikTok UNIMUS', {
+                        body: 'Notifikasi Chrome sudah aktif dan siap memberitahu setiap tugas masuk.'
+                    });
+                    showToast('Tes Notifikasi', 'Pemberitahuan Chrome berfungsi dengan baik.', 'success');
+                } else {
+                    const perm = await Notification.requestPermission();
+                    updateNotifStatusBadge();
+                    if (perm === 'granted') {
+                        playBellChime();
+                        showToast('Notifikasi Diaktifkan', 'Chrome akan memberi pemberitahuan setiap ada mahasiswa mengirim tugas.', 'success');
+                    }
+                }
+            });
+
+            function notifyNewSubmission(item) {
+                playBellChime();
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification(`Tugas Baru: ${item.nama} (${item.nim})`, {
+                        body: `Kelas: ${item.kelas || '-'} • Klik untuk melihat video TikTok.`
+                    });
+                }
+            }
+
+            // -----------------------------------------------------------------
+            // 5. INTEGRASI GOOGLE SHEETS
+            // -----------------------------------------------------------------
+            function updateSheetsStatusBadge() {
+                const label = document.getElementById('sheets-status-label');
+                label.textContent = sheetsWebhookUrl ? 'Sheets Terhubung' : 'Hubungkan Sheets';
+            }
+
+            document.getElementById('btn-open-sheets-modal').addEventListener('click', () => {
+                document.getElementById('input-sheets-url').value = sheetsWebhookUrl;
+                openModal('modal-sheets');
+            });
+
+            document.getElementById('btn-copy-apps-script').addEventListener('click', () => {
+                const scriptCode = `function doPost(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var payload = JSON.parse(e.postData.contents);
+
+  if (payload.action === "save_branding") {
+    var cfgSheet = ss.getSheetByName("Portal_Config") || ss.insertSheet("Portal_Config");
+    cfgSheet.clear();
+    cfgSheet.appendRow(["logoData", payload.logoData || ""]);
+    cfgSheet.appendRow(["bannerData", payload.bannerData || ""]);
+    return ContentService.createTextOutput(JSON.stringify({status: "branding_saved"})).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  if (payload.action === "delete_item") {
+    var delSheet = ss.getSheetByName("Data_Tugas") || ss.getSheets()[0];
+    var rows = delSheet.getDataRange().getValues();
+    for (var i = rows.length - 1; i >= 1; i--) {
+      if (String(rows[i][0]) === String(payload.id)) {
+        delSheet.deleteRow(i + 1);
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({status: "deleted"})).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  var sheet = ss.getSheetByName("Data_Tugas") || ss.getSheets()[0];
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(["ID", "Waktu Pengumpulan", "Nama Mahasiswa", "NIM", "Kelas", "Link TikTok", "Catatan", "Timestamp"]);
+  }
+  sheet.appendRow([payload.id, payload.waktu, payload.nama, payload.nim, payload.kelas, payload.link, payload.catatan, payload.createdAt]);
+  return ContentService.createTextOutput(JSON.stringify({status: "ok"})).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Data_Tugas") || ss.getSheets()[0];
+  var rows = sheet.getDataRange().getValues();
+  var list = [];
+  for (var i = 1; i < rows.length; i++) {
+    if (!rows[i][2]) continue;
+    list.push({
+      id: String(rows[i][0] || ('sheet_' + i)),
+      waktu: String(rows[i][1] || ''),
+      nama: String(rows[i][2] || ''),
+      nim: String(rows[i][3] || ''),
+      kelas: String(rows[i][4] || '-'),
+      link: String(rows[i][5] || ''),
+      catatan: String(rows[i][6] || '-'),
+      createdAt: Number(rows[i][7] || (Date.now() - i * 1000)),
+      synced: true
+    });
+  }
+
+  var branding = { logoData: "", bannerData: "" };
+  var cfgSheet = ss.getSheetByName("Portal_Config");
+  if (cfgSheet) {
+    var cfgRows = cfgSheet.getDataRange().getValues();
+    for (var j = 0; j < cfgRows.length; j++) {
+      if (cfgRows[j][0] === "logoData") branding.logoData = String(cfgRows[j][1] || "");
+      if (cfgRows[j][0] === "bannerData") branding.bannerData = String(cfgRows[j][1] || "");
+    }
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({
+    items: list,
+    branding: branding
+  })).setMimeType(ContentService.MimeType.JSON);
+}`;
+                copyToClipboard(scriptCode, 'Kode Google Apps Script (Database Penuh untuk Google Sites) berhasil disalin.');
+            });
+
+            document.getElementById('btn-copy-gsites-html').addEventListener('click', () => {
+                const currentUrl = document.getElementById('input-sheets-url').value.trim() || sheetsWebhookUrl;
+                if (!currentUrl) {
+                    showToast('URL Belum Diisi', 'Tempelkan URL Web App Google Apps Script terlebih dahulu sebelum menyalin kode Google Sites.', 'warning');
+                    return;
+                }
+                const embeddedPayload = JSON.stringify({
+                    sheetsWebhookUrl: currentUrl,
+                    logoData: sharedLogoData,
+                    bannerData: sharedBannerData
+                });
+                const fullDocHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML.replace(
+                    /<script id="embedded-portal-config" type="application\/json">[\s\S]*?<\/script>/,
+                    `<script id="embedded-portal-config" type="application/json">\n        ${embeddedPayload}\n    <\/script>`
+                );
+                copyToClipboard(fullDocHtml, 'Kode HTML lengkap (dengan URL Sheets, Logo & Banner tertanam) tersalin! Silakan tempel di Google Sites -> Sematkan Kode.');
+            });
+
+            document.getElementById('btn-save-sheets-url').addEventListener('click', async () => {
+                const urlVal = document.getElementById('input-sheets-url').value.trim();
+                sheetsWebhookUrl = urlVal;
+                await vaultSet(STORAGE_SHEETS_URL, urlVal);
+                updateSheetsStatusBadge();
+                await saveGlobalSettingsToCloud();
+                if (urlVal) await pullFromGoogleSheets();
+                showToast('Tersimpan', urlVal ? 'Koneksi Google Sheets aktif! Klik "Salin Kode HTML Siap Tempel ke Google Sites" jika memasangnya di Google Sites.' : 'URL Google Sheets dikosongkan.', 'success');
+            });
+
+            async function pushToGoogleSheets(item) {
+                if (!sheetsWebhookUrl) return false;
+                try {
+                    await fetch(sheetsWebhookUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(item)
+                    });
+                    return true;
+                } catch (err) {
+                    return false;
+                }
+            }
+
+            async function pullFromGoogleSheets() {
+                if (!sheetsWebhookUrl) return;
+                try {
+                    const sep = sheetsWebhookUrl.includes('?') ? '&' : '?';
+                    const res = await fetch(`${sheetsWebhookUrl}${sep}t=${Date.now()}`);
+                    if (!res.ok) return;
+                    const payload = await res.json();
+                    const sheetItems = Array.isArray(payload) ? payload : (Array.isArray(payload.items) ? payload.items : []);
+
+                    if (payload && payload.branding) {
+                        if (payload.branding.logoData) {
+                            sharedLogoData = payload.branding.logoData;
+                            await vaultSet(STORAGE_LOGO_DATA, sharedLogoData);
+                        }
+                        if (payload.branding.bannerData) {
+                            sharedBannerData = payload.branding.bannerData;
+                            await vaultSet(STORAGE_BANNER_DATA, sharedBannerData);
+                        }
+                        applyBrandingAssets();
+                    }
+
+                    if (sheetItems.length > 0) {
+                        const mapById = new Map();
+                        submissionsList.forEach(item => mapById.set(item.id, item));
+                        sheetItems.forEach(item => {
+                            if (item && item.id) {
+                                mapById.set(item.id, { ...mapById.get(item.id), ...item, synced: true });
+                            }
+                        });
+                        submissionsList = Array.from(mapById.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                        await vaultSet(STORAGE_SUBMISSIONS, submissionsList);
+                        renderDashboard();
+                    }
+                } catch (err) {}
+            }
+
+            // -----------------------------------------------------------------
+            // 6. SINKRONISASI REAL-TIME CLOUD (AGAR DATA AMAN SAAT REFRESH)
+            // -----------------------------------------------------------------
+            async function initCloudSync() {
+                await pullFromGoogleSheets();
+                if (!db || !auth) return;
+
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (err) {
+                    console.warn('Autentikasi cloud gagal, menggunakan penyimpanan lokal:', err);
+                    return;
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                    if (!user) return;
+
+                    // 1. Dengarkan Pengaturan Paten (Logo, Banner, & URL Google Sheets)
+                    const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'portal_settings', 'global_config');
+                    onSnapshot(settingsRef, async (snap) => {
+                        if (snap.exists()) {
+                            const cfg = snap.data();
+                            if (typeof cfg.logoData === 'string' && cfg.logoData) {
+                                sharedLogoData = cfg.logoData;
+                                await vaultSet(STORAGE_LOGO_DATA, cfg.logoData);
+                            }
+                            if (typeof cfg.bannerData === 'string' && cfg.bannerData) {
+                                sharedBannerData = cfg.bannerData;
+                                await vaultSet(STORAGE_BANNER_DATA, cfg.bannerData);
+                            }
+                            if (typeof cfg.sheetsWebhookUrl === 'string' && cfg.sheetsWebhookUrl) {
+                                sheetsWebhookUrl = cfg.sheetsWebhookUrl;
+                                await vaultSet(STORAGE_SHEETS_URL, cfg.sheetsWebhookUrl);
+                                updateSheetsStatusBadge();
+                            }
+                            applyBrandingAssets();
+                        } else if (sharedLogoData || sharedBannerData || sheetsWebhookUrl) {
+                            await saveGlobalSettingsToCloud();
+                        }
+                    }, (err) => console.warn('Snapshot pengaturan:', err));
+
+                    // 2. Dengarkan Daftar Tugas Mahasiswa secara Permanen & Real-Time
+                    const subsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'tiktok_submissions');
+                    onSnapshot(subsColRef, async (snapshot) => {
+                        const mapById = new Map();
+                        submissionsList.forEach(item => mapById.set(item.id, item));
+
+                        snapshot.forEach(docSnap => {
+                            const data = docSnap.data();
+                            if (data && data.id) {
+                                mapById.set(data.id, data);
+                            }
+                        });
+
+                        const mergedItems = Array.from(mapById.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+                        if (isInitialSnapshotLoaded && mergedItems.length > submissionsList.length) {
+                            const newestItem = mergedItems[0];
+                            if (newestItem && isAdminUnlocked) {
+                                notifyNewSubmission(newestItem);
+                            }
+                        }
+
+                        submissionsList = mergedItems;
+                        await vaultSet(STORAGE_SUBMISSIONS, submissionsList);
+                        isInitialSnapshotLoaded = true;
+                        renderDashboard();
+                    }, (err) => console.warn('Snapshot tugas:', err));
+                });
+            }
+
+            // -----------------------------------------------------------------
+            // 7. VALIDASI FORM & DETEKSI OTOMATIS LINK TIKTOK MAHASISWA
+            // -----------------------------------------------------------------
+            const inputNama    = document.getElementById('input-nama');
+            const inputNim     = document.getElementById('input-nim');
+            const inputKelas   = document.getElementById('input-kelas');
+            const inputLink    = document.getElementById('input-link');
+            const inputCatatan = document.getElementById('input-catatan');
+            const liveCheckCard = document.getElementById('live-link-check-card');
+
+            function isValidTikTokUrl(url) {
+                return /^https?:\/\/(www\.|vm\.|vt\.|m\.)?tiktok\.com\/.+/i.test(url.trim());
+            }
+
+            inputLink.addEventListener('input', async () => {
+                const val = inputLink.value.trim();
+                if (isValidTikTokUrl(val)) {
+                    document.getElementById('err-link').classList.add('hidden');
+                    liveCheckCard.classList.remove('hidden');
+                    document.getElementById('live-link-title').textContent = 'Tautan Video TikTok Valid';
+                    document.getElementById('live-link-author').textContent = val;
+
+                    try {
+                        const res = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(val)}`);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.title) document.getElementById('live-link-title').textContent = data.title;
+                            if (data.author_name) document.getElementById('live-link-author').textContent = `Kreator: @${data.author_name}`;
+                        }
+                    } catch (e) {}
+                } else {
+                    liveCheckCard.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('btn-paste-link').addEventListener('click', async () => {
+                try {
+                    const clipText = await navigator.clipboard.readText();
+                    if (clipText) {
+                        inputLink.value = clipText.trim();
+                        inputLink.dispatchEvent(new Event('input'));
+                    }
+                } catch (e) {
+                    inputLink.focus();
+                    showToast('Tempel Manual', 'Tekan Ctrl+V atau tahan kolom link lalu pilih Tempel.', 'info');
+                }
+            });
+
+            document.getElementById('submission-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const nama    = inputNama.value.trim();
+                const nim     = inputNim.value.trim().toUpperCase();
+                const kelas   = inputKelas.value.trim();
+                const link    = inputLink.value.trim();
+                const catatan = inputCatatan.value.trim();
+
+                let valid = true;
+                document.getElementById('err-nama').classList.toggle('hidden', !!nama);
+                if (!nama) valid = false;
+
+                document.getElementById('err-nim').classList.toggle('hidden', !!nim);
+                if (!nim) valid = false;
+
+                const linkOk = isValidTikTokUrl(link);
+                document.getElementById('err-link').classList.toggle('hidden', linkOk);
+                if (!linkOk) valid = false;
+
+                if (!valid) return;
+
+                const btnSubmit = document.getElementById('btn-submit-tugas');
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Menyimpan Tugas...</span>`;
+                lucide.createIcons();
+
+                const timestampNow = Date.now();
+                const nowStr = new Date(timestampNow).toLocaleString('id-ID', {
+                    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+
+                const newEntry = {
+                    id: 'tgs_' + timestampNow + '_' + Math.random().toString(36).slice(2, 6),
+                    nama,
+                    nim,
+                    kelas: kelas || '-',
+                    link,
+                    catatan: catatan || '-',
+                    waktu: nowStr,
+                    dateKey: new Date(timestampNow).toISOString().slice(0, 10),
+                    createdAt: timestampNow,
+                    synced: false
+                };
+
+                if (sheetsWebhookUrl) {
+                    newEntry.synced = await pushToGoogleSheets(newEntry);
+                }
+
+                // Simpan Permanen ke Cloud Database (Firestore)
+                if (db && currentUser) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tiktok_submissions', newEntry.id);
+                        await setDoc(docRef, newEntry);
+                    } catch (err) {
+                        console.warn('Gagal menyimpan ke cloud:', err);
+                    }
+                }
+
+                // Simpan juga ke IndexedDB agar tidak hilang saat refresh
+                if (!submissionsList.some(x => x.id === newEntry.id)) {
+                    submissionsList.unshift(newEntry);
+                }
+                await vaultSet(STORAGE_SUBMISSIONS, submissionsList);
+
+                notifyNewSubmission(newEntry);
+                renderDashboard();
+
+                document.getElementById('submission-form').reset();
+                liveCheckCard.classList.add('hidden');
+                document.getElementById('success-detail-text').textContent =
+                    `Terima kasih ${nama} (${nim}). Tautan video TikTok Anda berhasil tersimpan permanen pada ${nowStr}.`;
+                document.getElementById('student-success-banner').classList.remove('hidden');
+
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i><span>Kirim Tugas Sekarang</span>`;
+                lucide.createIcons();
+
+                showToast('Tersimpan Aman', `Tugas atas nama ${nama} telah tersimpan permanen.`, 'success');
+            });
+
+            document.getElementById('btn-submit-another').addEventListener('click', () => {
+                document.getElementById('student-success-banner').classList.add('hidden');
+                inputNama.focus();
+            });
+
+            // -----------------------------------------------------------------
+            // 8. DASBOR PEMANTAUAN & PRATINJAU VIDEO TIKTOK (KHUSUS DOSEN)
+            // -----------------------------------------------------------------
+            function escapeHtml(str) {
+                return String(str).replace(/[&<>"']/g, m => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                }[m]));
+            }
+
+            function renderDashboard() {
+                const searchQ = document.getElementById('input-search').value.toLowerCase().trim();
+                const classFilter = document.getElementById('filter-kelas').value;
+                const todayKey = new Date().toISOString().slice(0, 10);
+
+                document.getElementById('stat-total').textContent  = submissionsList.length;
+                document.getElementById('stat-synced').textContent = submissionsList.filter(x => x.synced).length;
+                document.getElementById('stat-today').textContent  = submissionsList.filter(x => x.dateKey === todayKey).length;
+                document.getElementById('badge-live-count').textContent = submissionsList.length;
+
+                const kelasSelect = document.getElementById('filter-kelas');
+                const uniqueClasses = [...new Set(submissionsList.map(x => x.kelas).filter(k => k && k !== '-'))];
+                const prevSelected = kelasSelect.value;
+                kelasSelect.innerHTML = `<option value="">Semua Kelas</option>` +
+                    uniqueClasses.map(k => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+                if (uniqueClasses.includes(prevSelected)) kelasSelect.value = prevSelected;
+
+                const filtered = submissionsList.filter(item => {
+                    const matchText = item.nama.toLowerCase().includes(searchQ) || item.nim.toLowerCase().includes(searchQ);
+                    const matchClass = !classFilter || item.kelas === classFilter;
+                    return matchText && matchClass;
+                });
+
+                if (filtered.length === 0) {
+                    submissionsEl.innerHTML = '';
+                    emptyStateEl.classList.remove('hidden');
+                    return;
+                }
+
+                emptyStateEl.classList.add('hidden');
+                submissionsEl.innerHTML = filtered.map((item, idx) => `
+                    <div class="p-5 hover:bg-slate-50/80 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="space-y-1.5 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-display font-bold text-sm text-unimus-navy">${escapeHtml(item.nama)}</span>
+                                <span class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 text-[11px] font-bold">${escapeHtml(item.nim)}</span>
+                                ${item.kelas && item.kelas !== '-' ? `<span class="px-2 py-0.5 rounded-lg bg-blue-50 text-unimus-blue text-[11px] font-semibold">${escapeHtml(item.kelas)}</span>` : ''}
+                                ${idx === 0 ? `<span class="px-2 py-0.5 rounded-full bg-rose-50 text-tiktok-pink text-[10px] font-bold">Baru</span>` : ''}
+                            </div>
+                            <p class="text-xs text-slate-500 truncate">${escapeHtml(item.link)}</p>
+                            <div class="flex items-center gap-3 text-[11px] text-slate-400">
+                                <span class="inline-flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${escapeHtml(item.waktu)}</span>
+                                <span class="inline-flex items-center gap-1 ${item.synced ? 'text-emerald-600 font-semibold' : 'text-blue-600 font-medium'}">
+                                    <i data-lucide="${item.synced ? 'check-circle' : 'cloud-check'}" class="w-3 h-3"></i>
+                                    ${item.synced ? 'Google Sheets & Cloud' : 'Tersimpan Permanen'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button type="button" onclick="openTikTokPreview('${item.id}')"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-tiktok-pink hover:bg-rose-600 text-white text-xs font-bold shadow-sm transition-all">
+                                <i data-lucide="play" class="w-3.5 h-3.5 fill-white"></i>
+                                <span>Tonton Video</span>
+                            </button>
+                            <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer"
+                                class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors" title="Buka di Tab Baru">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                            </a>
+                            <button type="button" onclick="deleteSubmission('${item.id}')"
+                                class="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors" title="Hapus Data">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            }
+
+            document.getElementById('input-search').addEventListener('input', renderDashboard);
+            document.getElementById('filter-kelas').addEventListener('change', renderDashboard);
+
+            window.deleteSubmission = async (id) => {
+                submissionsList = submissionsList.filter(x => x.id !== id);
+                await vaultSet(STORAGE_SUBMISSIONS, submissionsList);
+                renderDashboard();
+
+                if (sheetsWebhookUrl) {
+                    try {
+                        await fetch(sheetsWebhookUrl, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({ action: 'delete_item', id })
+                        });
+                    } catch (e) {}
+                }
+
+                if (db && currentUser) {
+                    try {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tiktok_submissions', id));
+                    } catch (err) {}
+                }
+                showToast('Dihapus', 'Data pengumpulan telah dihapus permanen.', 'info');
+            };
+
+            document.getElementById('btn-clear-all').addEventListener('click', async () => {
+                if (submissionsList.length === 0) return;
+                const toDelete = [...submissionsList];
+                submissionsList = [];
+                await vaultSet(STORAGE_SUBMISSIONS, []);
+                renderDashboard();
+
+                if (db && currentUser) {
+                    for (const item of toDelete) {
+                        try {
+                            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tiktok_submissions', item.id));
+                        } catch (err) {}
+                    }
+                }
+                showToast('Bersih', 'Semua daftar riwayat telah dikosongkan.', 'info');
+            });
+
+            document.getElementById('btn-export-csv').addEventListener('click', () => {
+                if (submissionsList.length === 0) {
+                    showToast('Data Kosong', 'Belum ada data mahasiswa untuk diunduh.', 'warning');
+                    return;
+                }
+                const header = ['Waktu', 'Nama Mahasiswa', 'NIM', 'Kelas', 'Link TikTok', 'Catatan'];
+                const rows = submissionsList.map(x => [x.waktu, x.nama, x.nim, x.kelas, x.link, x.catatan]
+                    .map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+                const csvContent = '\uFEFF' + [header.join(','), ...rows].join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Rekap_Tugas_TikTok_UNIMUS_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // -----------------------------------------------------------------
+            // 9. PEMUTAR PRATINJAU VIDEO TIKTOK
+            // -----------------------------------------------------------------
+            const modalVideo = document.getElementById('modal-video-preview');
+            const videoEmbedBox = document.getElementById('video-embed-box');
+            const videoLoader = document.getElementById('video-loader');
+            const videoFallback = document.getElementById('video-fallback-box');
+
+            function extractVideoId(url) {
+                const m = String(url).match(/\/(?:video|v|photo)\/(\d+)/i);
+                return m ? m[1] : null;
+            }
+
+            function mountTikTokPlayer(videoId) {
+                videoLoader.classList.add('hidden');
+                videoFallback.classList.add('hidden');
+                videoEmbedBox.innerHTML = `
+                    <iframe
+                        src="https://www.tiktok.com/embed/v2/${videoId}?lang=id-ID"
+                        class="w-full max-w-[330px] h-[560px] rounded-2xl border border-slate-800 bg-black shadow-2xl"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                `;
+            }
+
+            window.openTikTokPreview = async (id) => {
+                const item = submissionsList.find(x => x.id === id);
+                if (!item) return;
+
+                document.getElementById('preview-student-name').textContent = item.nama;
+                document.getElementById('preview-student-meta').textContent = `NIM: ${item.nim} • Kelas: ${item.kelas}`;
+                document.getElementById('preview-student-note').textContent = item.catatan !== '-' ? item.catatan : item.link;
+                document.getElementById('preview-external-link').href = item.link;
+
+                videoEmbedBox.innerHTML = '';
+                videoFallback.classList.add('hidden');
+                videoLoader.classList.remove('hidden');
+
+                openModal('modal-video-preview');
+
+                const directId = extractVideoId(item.link);
+                if (directId) {
+                    mountTikTokPlayer(directId);
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(item.link)}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        const resolvedId = data.embed_product_id || extractVideoId(data.html);
+                        if (resolvedId) {
+                            mountTikTokPlayer(resolvedId);
+                            return;
+                        }
+                    }
+                } catch (e) {}
+
+                videoLoader.classList.add('hidden');
+                videoFallback.classList.remove('hidden');
+            };
+
+            function closeVideoModal() {
+                closeModal('modal-video-preview');
+                videoEmbedBox.innerHTML = '';
+            }
+
+            document.getElementById('btn-close-video-preview').addEventListener('click', closeVideoModal);
+            modalVideo.addEventListener('click', (e) => {
+                if (e.target === modalVideo) closeVideoModal();
+            });
+
+            // -----------------------------------------------------------------
+            // 10. HELPER MODAL UMUM & INISIALISASI
+            // -----------------------------------------------------------------
+            function openModal(id) {
+                const m = document.getElementById(id);
+                m.classList.remove('hidden');
+                m.classList.add('flex');
+                lucide.createIcons();
+            }
+
+            function closeModal(id) {
+                const m = document.getElementById(id);
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            }
+
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', () => closeModal(btn.dataset.target));
+            });
+
+            applyRoleView();
+            await initCloudSync();
+        });
+    </script>
+</body>
+</html>
